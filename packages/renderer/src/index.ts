@@ -5,4 +5,3 @@ import Maska from 'maska';
 const app = createApp(App);
 app.use(Maska);
 app.mount('#app');
-

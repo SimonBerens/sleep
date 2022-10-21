@@ -8,11 +8,10 @@ ElectronStore.initRenderer();
 
 if (import.meta.env.PROD) {
   const AutoLaunch = require('auto-launch');
-  (new AutoLaunch({
+  new AutoLaunch({
     name: 'Sleep',
-  })).enable();
+  }).enable();
 }
-
 
 /**
  * Prevent electron from running multiple instances.
@@ -43,12 +42,12 @@ app.on('window-all-closed', () => {
  */
 app.on('activate', restoreOrCreateWindow);
 
-
 /**
  * Create app window when background process will be ready
  */
 let tray;
-app.whenReady()
+app
+  .whenReady()
   .then(restoreOrCreateWindow)
   .then(() => {
     tray = new Tray(nativeImage.createFromDataURL(icon));
@@ -56,18 +55,22 @@ app.whenReady()
       const window = await restoreOrCreateWindow();
       window.show();
     });
-    tray.setContextMenu(Menu.buildFromTemplate([
-      {
-        label: 'Show', type: 'normal', role: 'unhide', click: async () => {
-          const window = await restoreOrCreateWindow();
-          window.show();
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        {
+          label: 'Show',
+          type: 'normal',
+          role: 'unhide',
+          click: async () => {
+            const window = await restoreOrCreateWindow();
+            window.show();
+          },
         },
-      },
-      {label: 'Quit', type: 'normal', role: 'quit'},
-    ]));
+        {label: 'Quit', type: 'normal', role: 'quit'},
+      ]),
+    );
   })
-  .catch((e) => console.error('Failed create window:', e));
-
+  .catch(e => console.error('Failed create window:', e));
 
 /**
  * Check for new version of the application - production mode only.

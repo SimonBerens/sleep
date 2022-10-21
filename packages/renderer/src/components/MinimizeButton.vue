@@ -15,6 +15,6 @@ function sendMinimizeSignal() {
       src="./../minimize.svg"
       class="h-full w-full"
       alt="minimize"
-    >
+    />
   </button>
 </template>

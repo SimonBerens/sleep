@@ -2,13 +2,13 @@
 import {defineEmits, defineProps} from 'vue';
 import {padN} from '/@/pad';
 
-const props = defineProps<{ hour: number, minute: number }>();
+const props = defineProps<{hour: number; minute: number}>();
 
 function formatTime() {
   return padN(props.hour, 2) + ':' + padN(props.minute, 2);
 }
 
-const emit = defineEmits<{ (e: 'time-update', hours: number, minutes: number): void }>();
+const emit = defineEmits<{(e: 'time-update', hours: number, minutes: number): void}>();
 
 function handleInputChange(e: Event) {
   const val = (e.currentTarget as any).value;
@@ -18,7 +18,6 @@ function handleInputChange(e: Event) {
   if (isNaN(hours) || isNaN(minutes)) return;
   emit('time-update', hours, minutes);
 }
-
 </script>
 
 <template>
@@ -27,5 +26,5 @@ function handleInputChange(e: Event) {
     class="w-[4.5rem] bg-white/[.15] text-white text-2xl"
     :value="formatTime()"
     @input="handleInputChange"
-  >
+  />
 </template>

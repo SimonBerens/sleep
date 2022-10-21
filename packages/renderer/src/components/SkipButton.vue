@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {defineProps} from 'vue';
 
-defineProps<{ skipped: boolean; }>();
+defineProps<{skipped: boolean}>();
 </script>
 
 <template>
@@ -15,7 +15,7 @@ defineProps<{ skipped: boolean; }>();
         src="./../skip.svg"
         class="h-[1.125rem]"
         alt="Skip"
-      >
+      />
     </span>
   </button>
 </template>

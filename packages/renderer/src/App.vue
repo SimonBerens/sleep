@@ -17,27 +17,40 @@ function runShutdown() {
 }
 
 const SETTINGS = ref(store.getSettings());
-watch(SETTINGS, newSettings => {
-  const rawSettingsObj = Object.assign({}, newSettings);
-  store.setSettings(rawSettingsObj);
-}, {deep: true});
+watch(
+  SETTINGS,
+  newSettings => {
+    const rawSettingsObj = Object.assign({}, newSettings);
+    store.setSettings(rawSettingsObj);
+  },
+  {deep: true},
+);
 
+const start = computed(() =>
+  Temporal.PlainTime.from({
+    hour: SETTINGS.value.startHour,
+    minute: SETTINGS.value.startMinute,
+  }),
+);
+const end = computed(() =>
+  Temporal.PlainTime.from({
+    hour: SETTINGS.value.endHour,
+    minute: SETTINGS.value.endMinute,
+  }),
+);
 
-const start = computed(() => Temporal.PlainTime.from({
-  hour: SETTINGS.value.startHour,
-  minute: SETTINGS.value.startMinute,
-}));
-const end = computed(() => Temporal.PlainTime.from({
-  hour: SETTINGS.value.endHour,
-  minute: SETTINGS.value.endMinute,
-}));
-
-function inShutdownZone(plainTime ?: Temporal.PlainTime) {
+function inShutdownZone(plainTime?: Temporal.PlainTime) {
   if (plainTime === undefined) plainTime = Temporal.Now.plainTimeISO();
   if (Temporal.PlainTime.compare(start.value, end.value) == -1) {
-    return Temporal.PlainTime.compare(start.value, plainTime) <= 0 && Temporal.PlainTime.compare(plainTime, end.value) <= 0;
+    return (
+      Temporal.PlainTime.compare(start.value, plainTime) <= 0 &&
+      Temporal.PlainTime.compare(plainTime, end.value) <= 0
+    );
   } else {
-    return Temporal.PlainTime.compare(start.value, plainTime) <= 0 || Temporal.PlainTime.compare(plainTime, end.value) <= 0;
+    return (
+      Temporal.PlainTime.compare(start.value, plainTime) <= 0 ||
+      Temporal.PlainTime.compare(plainTime, end.value) <= 0
+    );
   }
 }
 
@@ -47,14 +60,18 @@ function minutesSinceStart() {
   const now = Temporal.Now.plainTimeISO();
   let timePassedSinceStart = start.value.until(now).total({unit: 'minutes'});
   if (timePassedSinceStart < 0) {
-    timePassedSinceStart = start.value.until(midnight).add(midnight.until(now)).total({unit: 'minutes'});
+    timePassedSinceStart = start.value
+      .until(midnight)
+      .add(midnight.until(now))
+      .total({unit: 'minutes'});
   }
   return timePassedSinceStart;
 }
 
 function getMinutesToNextShutdown() {
   const m = minutesSinceStart();
-  const minutesFromStartToNextShutdown = Math.ceil(m / SETTINGS.value.interval) * SETTINGS.value.interval;
+  const minutesFromStartToNextShutdown =
+    Math.ceil(m / SETTINGS.value.interval) * SETTINGS.value.interval;
   if (inShutdownZone(start.value.add({minutes: minutesFromStartToNextShutdown}))) {
     return minutesFromStartToNextShutdown - m;
   } else return Temporal.Now.plainTimeISO().until(start.value).total({unit: 'minutes'});
@@ -70,7 +87,7 @@ const t = ref(0);
 
 if (window.Worker) {
   const worker = new Worker(new URL('./worker.ts', import.meta.url), {type: 'module'});
-  worker.addEventListener('message', (e) => {
+  worker.addEventListener('message', e => {
     if (e.data !== 'worker-interval') return;
     const minutesWithSkipped = getMinutesToNextShutdownWithSkipped();
     t.value = minutesWithSkipped;
@@ -93,7 +110,6 @@ function tieEnd(hours: number, minutes: number) {
   SETTINGS.value.endHour = hours;
   SETTINGS.value.endMinute = minutes;
 }
-
 </script>
 
 <template>
@@ -130,13 +146,13 @@ function tieEnd(hours: number, minutes: number) {
               v-model.number="SETTINGS.interval"
               type="number"
               class="w-8 mr-0.5 bg-white/[.15] text-white text-2xl"
-            >
+            />
             <span class="text-white text-lg self-end">min</span>
           </div>
         </div>
         <SkipButton
           :skipped="skipped"
-          @click="skipped=true"
+          @click="skipped = true"
         />
       </div>
     </div>
