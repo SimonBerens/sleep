@@ -2,9 +2,11 @@
 import ReactiveCounter from '/@/components/ReactiveCounter.vue';
 import ReactiveHash from '/@/components/ReactiveHash.vue';
 import ElectronVersions from '/@/components/ElectronVersions.vue';
+import './../index.css';
 </script>
 
 <template>
+  <div class=""> hello tailwind </div>
   <img
     alt="Vue logo"
     src="../assets/logo.svg"
@@ -45,15 +47,6 @@ import ElectronVersions from '/@/components/ElectronVersions.vue';
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin: 60px auto;
-  max-width: 700px;
-}
 
 fieldset {
   margin: 2rem;
