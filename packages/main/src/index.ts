@@ -1,6 +1,17 @@
-import {app} from 'electron';
+import {app, nativeImage, Tray, Menu} from 'electron';
 import './security-restrictions';
 import {restoreOrCreateWindow} from '/@/mainWindow';
+import icon from '../../../buildResources/icon.png';
+
+const ElectronStore = require('electron-store');
+ElectronStore.initRenderer();
+
+if (import.meta.env.PROD) {
+  const AutoLaunch = require('auto-launch');
+  new AutoLaunch({
+    name: 'Sleep',
+  }).enable();
+}
 
 /**
  * Prevent electron from running multiple instances.
@@ -32,27 +43,34 @@ app.on('window-all-closed', () => {
 app.on('activate', restoreOrCreateWindow);
 
 /**
- * Create the application window when the background process is ready.
+ * Create app window when background process will be ready
  */
+let tray;
 app
   .whenReady()
   .then(restoreOrCreateWindow)
+  .then(() => {
+    tray = new Tray(nativeImage.createFromDataURL(icon));
+    tray.on('click', async () => {
+      const window = await restoreOrCreateWindow();
+      window.show();
+    });
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        {
+          label: 'Show',
+          type: 'normal',
+          role: 'unhide',
+          click: async () => {
+            const window = await restoreOrCreateWindow();
+            window.show();
+          },
+        },
+        {label: 'Quit', type: 'normal', role: 'quit'},
+      ]),
+    );
+  })
   .catch(e => console.error('Failed create window:', e));
-
-/**
- * Install Vue.js or any other extension in development mode only.
- * Note: You must install `electron-devtools-installer` manually
- */
-// if (import.meta.env.DEV) {
-//   app.whenReady()
-//     .then(() => import('electron-devtools-installer'))
-//     .then(({default: installExtension, VUEJS3_DEVTOOLS}) => installExtension(VUEJS3_DEVTOOLS, {
-//       loadExtensionOptions: {
-//         allowFileAccess: true,
-//       },
-//     }))
-//     .catch(e => console.error('Failed install extension:', e));
-// }
 
 /**
  * Check for new version of the application - production mode only.

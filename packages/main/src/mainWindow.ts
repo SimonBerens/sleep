@@ -1,10 +1,13 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import {join} from 'path';
 import {URL} from 'url';
 
 async function createWindow() {
   const browserWindow = new BrowserWindow({
     show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
+    frame: false,
+    height: 270,
+    width: 540,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -23,12 +26,14 @@ async function createWindow() {
    * @see https://github.com/electron/electron/issues/25012 for the afford mentioned issue.
    */
   browserWindow.on('ready-to-show', () => {
-    browserWindow?.show();
-
     if (import.meta.env.DEV) {
       browserWindow?.webContents.openDevTools();
     }
   });
+
+  browserWindow.on('blur', () => browserWindow.hide());
+
+  ipcMain.on('minimize-clicked', () => browserWindow.hide());
 
   /**
    * URL for main window.
@@ -60,4 +65,5 @@ export async function restoreOrCreateWindow() {
   }
 
   window.focus();
+  return window;
 }
