@@ -1,11 +1,11 @@
 {
-  "name": "vite-electron-builder",
-  "description": "Secure boilerplate for Electron app based on Vite",
+  "name": "sleep-schedule",
+  "description": "Desktop app that enforces a consistent bedtime",
   "private": true,
   "author": {
-    "email": "kozackunisoft@gmail.com",
-    "name": "Alex Kozack",
-    "url": "https://kozack.me"
+    "email": "simon@simonberens.me",
+    "name": "Simon Berens",
+    "url": "https://simonberens.me"
   },
   "main": "packages/main/dist/index.cjs",
   "scripts": {
